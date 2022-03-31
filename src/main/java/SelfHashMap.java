@@ -1,18 +1,18 @@
 import java.io.Serializable;
 import java.util.*;
 
-public class SelfHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, Cloneable, Serializable {
+public class SelfHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, Cloneable, Serializable{
 
     /**
-     * Коэффициент загрузки по умолчанию
+     * лоад фактор по умолчанию
      */
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
     /**
-     * Начальная длина по умолчанию
+     *  длина по умолчанию
      */
     private static final int DEFAULT_LENGTH = 16;
     /**
-     * Длина столов
+     * Длина массива
      */
     private int arrayLength;
 
@@ -24,7 +24,7 @@ public class SelfHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, C
     private float loadFactor;
 
     /**
-     * Массив узлов хранения
+     * Массив узлов нодов
      */
     private Node<K, V>[] tables;
 
@@ -204,6 +204,7 @@ public class SelfHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, C
         arrayLength = newLength;
     }
 
+
     class Node<K, V> implements Entry<K, V> {
         private K key;
         private V value;
@@ -249,67 +250,34 @@ public class SelfHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>, C
 
     //сортировка---------------------------------------
 
+    /**
+     *
+     * Сортируем по значению мапу.
+     * Сортировку взял из Collections.(свою реализацию никак не смог прикрутить по дженерикам, интерфейсам и тд )
+     *
+     * @return    Тут сначала принимаем мап. Далее создаем лист для сортировки . Потом сравниваем значения.
+     *            Далее результат помещаем в мап
+     *
+     */
+    public static   <K, V extends Comparable<? super V>> Map<K, V>
+    sortByValue(Map<K, V> map ) //принимаем мап
+    {
+        List<Map.Entry<K, V>> list =
+                new LinkedList<>(map.entrySet());  //создаем лист для сортировки
+        Collections.sort( list, new Comparator<Map.Entry<K, V>>()
+        {
+            @Override
+            public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2)  //сравниваем значения
+            {
+                return (o1.getValue()).compareTo( o2.getValue() );
+            }
+        } );
 
-
-//    private static final int CUTOFF = 3;
-//
-//    public static <T extends Comparable<? super T>> void quicksort(T[] a) {
-//        quicksort(a, 0, a.length - 1);
-//    }
-//
-//    public static <T extends Comparable<? super T>> void quicksort(T[] a, int left, int right) {
-//        if (left + CUTOFF <= right) {
-//            T pivot = median3(a, left, right);
-//
-//            // Begin partitioning
-//            int i = left, j = right - 1;
-//            for (; ; ) {
-//                while (a[++i].compareTo(pivot) < 0) {
-//                }
-//                while (a[--j].compareTo(pivot) > 0) {
-//                }
-//                if (i < j)
-//                    swapReferences(a, i, j);
-//                else
-//                    break;
-//            }
-//
-//            swapReferences(a, i, right - 1);   // Restore pivot
-//
-//            quicksort(a, left, i - 1);    // Sort small elements
-//            quicksort(a, i + 1, right);   // Sort large elements
-//        } else  // Do an insertion sort on the subarray
-//            insertionSort(a, left, right);
-//    }
-//
-//    public static <T> void swapReferences(T[] a, int index1, int index2) {
-//        T tmp = a[index1];
-//        a[index1] = a[index2];
-//        a[index2] = tmp;
-//    }
-//
-//    public static <T extends Comparable<? super T>> T median3(T[] a, int left, int right) {
-//        int center = (left + right) / 2;
-//        if (a[center].compareTo(a[left]) < 0)
-//            swapReferences(a, left, center);
-//        if (a[right].compareTo(a[left]) < 0)
-//            swapReferences(a, left, right);
-//        if (a[right].compareTo(a[center]) < 0)
-//            swapReferences(a, center, right);
-//
-//        // Place pivot at position right - 1
-//        swapReferences(a, center, right - 1);
-//        return a[right - 1];
-//    }
-//
-//    public static <T extends Comparable<? super T>> void insertionSort(T[] a, int left, int right) {
-//        for (int p = left + 1; p <= right; p++) {
-//            T tmp = a[p];
-//            int j;
-//            for (j = p; j > left && tmp.compareTo(a[j - 1]) < 0; j--)
-//                a[j] = a[j - 1];
-//            a[j] = tmp;
-//        }
-//    }
-
+        Map<K, V> result = new LinkedHashMap<>();  //результат помещаем в мап
+        for (Map.Entry<K, V> entry : list)
+        {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
 }
